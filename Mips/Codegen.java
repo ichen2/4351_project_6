@@ -169,8 +169,43 @@ public class Codegen {
     return shift;
   }
 
+  // possible bugs here
   Temp munchExp(Tree.BINOP e) {
-    return frame.ZERO;
+    if(e.left instanceof Tree.CONST && e.right instanceof Tree.CONST) {
+      Temp t = new Temp();
+      TempList tList = L(t);
+      String op = BINOP[e.binop];        
+      emit(new Assem.OPER(op + " `d0," + e.left.value +  "," + e.right.value, tList, null));
+      return t;
+    }
+    else if(e.right instanceof Tree.CONST) {
+      Temp t = new Temp();
+      TempList tList = L(t);
+      String op = BINOP[e.binop];
+      Temp lTemp = munchExp(e.left);
+      TempList opList = L(lTemp);
+      emit(new Assem.OPER(op + " `d0, `s0," + e.right.value, tList, opList));
+      return t;
+    }
+    else if(e.left instanceof Tree.CONST) {
+      Temp t = new Temp();
+      TempList tList = L(t);
+      String op = BINOP[e.binop];
+      Temp rTemp = munchExp(e.right);
+      TempList opList = L(rTemp);
+      emit(new Assem.OPER(op + " `d0," + e.left.value + ", `s0", tList, opList));
+      return t;
+    }
+    else {
+      Temp t = new Temp();
+      TempList tList = L(t);
+      String op = BINOP[e.binop];
+      Temp left = munchExp(e.left);
+      Temp right = munchExp(e.right);
+      TempList opList = L(left, L(right, null));
+      emit(new Assem.OPER(op + " `d0, `s0, `s1", tList, opList));
+      return t;
+    }
   }
 
   Temp munchExp(Tree.MEM e) {
