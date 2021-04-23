@@ -92,7 +92,7 @@ public class Codegen {
   void munchStm(Tree.CJUMP s) {
     String op = CJUMP[s.relop];
     Temp left = munchExp(s.left);
-    Temp rigth = munchExp(s.right);
+    Temp right = munchExp(s.right);
     TempList vList = L(left, L(right));
     LabelList jList = new LabelList(s.iftrue, new LabelList(s.iffalse, null));
     emit(new Assem.OPER(op + "`s0, `s1, `j0", null, vList, jList));
@@ -175,7 +175,7 @@ public class Codegen {
       Temp t = new Temp();
       TempList tList = L(t);
       String op = BINOP[e.binop];        
-      emit(new Assem.OPER(op + " `d0," + e.left.value +  "," + e.right.value, tList, null));
+      emit(new Assem.OPER(op + " `d0," + ((Tree.CONST) e.left).value +  "," + ((Tree.CONST) e.right).value, tList, null));
       return t;
     }
     else if(e.right instanceof Tree.CONST) {
