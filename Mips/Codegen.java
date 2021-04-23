@@ -16,7 +16,7 @@ public class Codegen {
       last = last.tail = new Assem.InstrList(inst, null);
     else {
       if (ilist != null)
-	throw new Error("Codegen.emit");
+	      throw new Error("Codegen.emit");
       last = ilist = new Assem.InstrList(inst, null);
     }
   }
@@ -143,8 +143,8 @@ public class Codegen {
     int shift = 0;
     if ((i >= 2) && ((i & (i - 1)) == 0)) {
       while (i > 1) {
-	shift += 1;
-	i >>= 1;
+        shift += 1;
+        i >>= 1;
       }
     }
     return shift;
@@ -183,7 +183,7 @@ public class Codegen {
       break;
     default:
       emit(OPER("sw `s0 " + (i-1)*frame.wordSize() + "(`s1)",
-		null, L(src, L(frame.SP))));
+		    null, L(src, L(frame.SP))));
       break;
     }
     return L(src, munchArgs(i+1, args.tail));
