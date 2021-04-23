@@ -209,11 +209,19 @@ public class Codegen {
   }
 
   Temp munchExp(Tree.MEM e) {
-    return frame.ZERO;
+    if(e.exp instanceof Tree.CONST) {
+      return munchExp(e, (Tree.CONST) e.exp);
+    }
+    Temp t = new Temp();
+    emit(OPER("lw `d0 (`s0)", L(t), L(munchExp(e.exp))));
+    return t;
   }
 
   Temp munchExp(Tree.CALL s) {
-    return frame.ZERO;
+    if(s.func instanceof Tree.NAME) {
+      emit(OPER("jal " + s.func,  frame.calldefs, munchArgs(0, s.args)));
+      return frame.V0;
+    }
   }
 
   private TempList munchArgs(int i, Tree.ExpList args) {
