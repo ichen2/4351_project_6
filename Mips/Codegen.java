@@ -61,6 +61,9 @@ public class Codegen {
   }
 
   void munchStm(Tree.MOVE s) {
+    Temp t = munchExp(s.dst);
+    Temp f = munchExp(s.src);
+    emit(new Assem.MOVE("move `d0, `s0", t, f));
   }
 
   void munchStm(Tree.UEXP s) {
@@ -68,6 +71,8 @@ public class Codegen {
   }
 
   void munchStm(Tree.JUMP s) {
+    LabelList tList = s.targets;
+    emit(new Assem.OPER("j " + tList.head, null, null, tList));
   }
 
   private static String[] CJUMP = new String[10];
@@ -85,9 +90,16 @@ public class Codegen {
   }
 
   void munchStm(Tree.CJUMP s) {
+    String op = CJUMP[s.relop];
+    Temp left = munchExp(s.left);
+    Temp rigth = munchExp(s.right);
+    TempList vList = L(left, L(right));
+    LabelList jList = new LabelList(s.iftrue, new LabelList(s.iffalse, null));
+    emit(new Assem.OPER(op + "`s0, `s1, `j0", null, vList, jList));
   }
 
   void munchStm(Tree.LABEL l) {
+    emit(new Assem.LABEL(l.label.toString() + ":", l.label));
   }
 
   Temp munchExp(Tree.Exp s) {
@@ -108,11 +120,18 @@ public class Codegen {
   }
 
   Temp munchExp(Tree.CONST e) {
-    return frame.ZERO;
+    if(e.value == 0) {
+      return frame.ZERO;
+    }
+    Temp t = new Temp();
+    emit(OPER("li `d0 " + e.value, L(t), null));
+    return t;
   }
 
   Temp munchExp(Tree.NAME e) {
-    return frame.ZERO;
+    Temp t = new Temp();
+    emit(OPER("la `d0 " + e.label.toString(), L(t), null));
+    return t;
   }
 
   Temp munchExp(Tree.TEMP e) {
