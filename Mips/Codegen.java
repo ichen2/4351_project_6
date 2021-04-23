@@ -184,7 +184,7 @@ public class Codegen {
       String op = BINOP[e.binop];
       Temp lTemp = munchExp(e.left);
       TempList opList = L(lTemp);
-      emit(new Assem.OPER(op + " `d0, `s0," + e.right.value, tList, opList));
+      emit(new Assem.OPER(op + " `d0, `s0," + ((Tree.CONST) e.right).value, tList, opList));
       return t;
     }
     else if(e.left instanceof Tree.CONST) {
@@ -193,7 +193,7 @@ public class Codegen {
       String op = BINOP[e.binop];
       Temp rTemp = munchExp(e.right);
       TempList opList = L(rTemp);
-      emit(new Assem.OPER(op + " `d0," + e.left.value + ", `s0", tList, opList));
+      emit(new Assem.OPER(op + " `d0," + ((Tree.CONST) e.left).value + ", `s0", tList, opList));
       return t;
     }
     else {
@@ -211,7 +211,7 @@ public class Codegen {
   Temp munchExp(Tree.MEM e) {
     Temp t = new Temp();
     if(e.exp instanceof Tree.CONST) {
-      emit(OPER("lw `d0 " + e.exp.value, L(t), null));
+      emit(OPER("lw `d0 " + ((Tree.CONST) e.exp).value, L(t), null));
       return t;
     }
     else {
